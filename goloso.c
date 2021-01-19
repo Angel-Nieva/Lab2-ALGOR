@@ -23,7 +23,8 @@ movimiento *crearNodo(movimiento *nuevo,int partida,int llegada,float c );
 void encolar(movimiento **inicio,movimiento **final,movimiento *nuevo);
 void descolar(movimiento **inicio,movimiento **final);
 void freeCola(movimiento **nodo);
-
+char * movimientoToString(basural *centros,movimiento *inicio,int numCentros);
+void writeFile(basural *centros,movimiento *inicio,const char * filename,int numCentros);
 /*====================================== MAIN ===========================================================*/
 int main(int argc, char const *argv[])
 {
@@ -40,7 +41,7 @@ int main(int argc, char const *argv[])
         movimiento *final = NULL;
         goloso(centros,numCentros,incineradores,subsidio,&inicio,&final);
 
-        movimiento *aux = inicio;
+       /* movimiento *aux = inicio;
 
         float costoTotal = 0;
         while ( aux != NULL )
@@ -51,6 +52,9 @@ int main(int argc, char const *argv[])
         }
         printf("Total: %f\n",costoTotal);
 
+        */
+        printf("voy aca\n");
+        writeFile(centros,inicio,argv[2],numCentros);
         //writeFile(g,argv[2]); 
         free(centros);
         freeCola(&inicio);
@@ -204,6 +208,67 @@ void descolar(movimiento **inicio,movimiento **final)
 	}
 	return;
 }
+/*============================================ FUNCIONES ESCRITURA====================================================*/
+
+char * movimientoToString(basural *centros,movimiento *inicio,int numCentros){
+    char *buffer = malloc(sizeof(char)*1000);
+    int a = 0;
+
+    movimiento *aux = inicio;
+    printf("entroooooo\n");
+    float costoTotal = 0;
+    while ( aux != NULL )
+    {
+        a +=snprintf(buffer+a,1000-a,"%d -> %d : %f\n",aux->centroInicio,aux->centroFinal,aux->costo);
+        costoTotal+= aux->costo;
+          aux = aux->sig;
+      }
+
+      for (size_t i = 0; i < numCentros; i++)
+	{
+        if ( centros[i].basura != 0 )
+        {
+            a += snprintf(buffer+a,1000-a,"centro %d: %d toneladas\n",centros[i].distancia,centros[i].basura);  //snprintf transforma a string
+        }        
+            
+	}
+    a += snprintf(buffer+a,1000-a,"costo: %f\n",costoTotal);
+    printf("%s \n",buffer);
+   
+    return buffer;
+}
+
+
+
+void writeFile(basural *centros,movimiento *inicio,const char*filename,int numCentros)
+{
+    printf("entrooooo23232o\n");
+    char *buffer = movimientoToString(centros,inicio,numCentros);
+    FILE *fp;
+    fp = fopen(filename, "w+");
+    fputs(buffer,fp);
+    fclose(fp);
+    free(buffer);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 void front(cola *inicio){
