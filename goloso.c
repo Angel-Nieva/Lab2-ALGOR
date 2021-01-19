@@ -6,7 +6,7 @@ typedef struct basural{
     int basura;    // Toneladas de basura
 } basural;
 
-typedef struct cola{
+typedef struct lista{
 	int centroInicio;   // Centro de partida con la basura
     int centroFinal;    // Centro de llegada con la basura
     float costo;              // Costo de mover la basura
@@ -17,12 +17,11 @@ basural * openFile(const char * filename,int *centros,int *incineradores,float *
 
 int basuraPorMover(basural *centros,int numCentros,int incineradores);
 movimiento *mejorCandidato(basural *centros,int numCentros,float descuento);
-void goloso(basural *centros,int numCentros,int incineradores,float subsidio,movimiento **inicio,movimiento **final);
+void goloso(basural *centros,int numCentros,int incineradores,float subsidio,movimiento **inicio);
 
 movimiento *crearNodo(movimiento *nuevo,int partida,int llegada,float c );
-void encolar(movimiento **inicio,movimiento **final,movimiento *nuevo);
-void descolar(movimiento **inicio,movimiento **final);
-void freeCola(movimiento **nodo);
+void ingresar(movimiento **inicio,movimiento *nuevo);
+void freeLista(movimiento **nodo);
 char * movimientoToString(basural *centros,movimiento *inicio,int numCentros);
 void writeFile(basural *centros,movimiento *inicio,const char * filename,int numCentros);
 /*====================================== MAIN ===========================================================*/
@@ -38,13 +37,10 @@ int main(int argc, char const *argv[])
     if(centros != NULL){
 
         movimiento *inicio = NULL;
-        movimiento *final = NULL;
-        goloso(centros,numCentros,incineradores,subsidio,&inicio,&final);
-
+        goloso(centros,numCentros,incineradores,subsidio,&inicio);
         writeFile(centros,inicio,argv[2],numCentros);
-
         free(centros);
-        freeCola(&inicio);
+        freeLista(&inicio);
     }
     return 0;
 }
@@ -143,13 +139,13 @@ movimiento *mejorCandidato(basural *centros,int numCentros,float descuento)
     return nuevo;    
 }
 
-void goloso(basural *centros,int numCentros,int incineradores,float subsidio,movimiento **inicio,movimiento **final)
+void goloso(basural *centros,int numCentros,int incineradores,float subsidio,movimiento **inicio)
 {
     float descuento = (1 - (1/subsidio));
     while ( basuraPorMover(centros,numCentros,incineradores) )
     {        
         movimiento *candidato = mejorCandidato(centros,numCentros,descuento);
-        encolar(inicio,final,candidato);
+        ingresar(inicio,candidato);
     }
 
 }
@@ -165,36 +161,22 @@ movimiento *crearNodo(movimiento *nuevo,int partida,int llegada,float c )
 	return nuevo;
 }
 
-void encolar(movimiento **inicio,movimiento **final,movimiento *nuevo)
-{
-	(*final) = nuevo;
-	if((*inicio) == NULL){
-		(*inicio) = nuevo;
-	}else{
-		movimiento *auxiliar = (*inicio);
-		while(auxiliar->sig != NULL){ 
-			auxiliar = auxiliar->sig;
-		}
-		auxiliar->sig = nuevo;
-	}
+void ingresar(movimiento **inicio,movimiento *nuevo)
+{	
+	movimiento *auxiliar = (*inicio);
+    if(auxiliar != NULL)
+    {
+        while(auxiliar->sig != NULL){ 
+            auxiliar = auxiliar->sig;
+        }
+        auxiliar->sig = nuevo;	
+    }
+    else{
+        (*inicio) = nuevo;
+    }    
 	return;
 }
 
-void descolar(movimiento **inicio,movimiento **final)
-{
-	if((*inicio) == NULL){
-		return;
-	}else if((*inicio)->sig == NULL){
-		free((*inicio));
-		(*inicio) = NULL;
-		(*final) = NULL;
-	}else{
-		movimiento *auxiliar = (*inicio);
-		(*inicio) = (*inicio)->sig;
-		free(auxiliar);
-	}
-	return;
-}
 /*============================================ FUNCIONES ESCRITURA====================================================*/
 /**
  * @brief Transforma los movimientos y resultados en un string posible de visualizar y guardar en un archivo de texto
@@ -244,32 +226,12 @@ void writeFile(basural *centros,movimiento *inicio,const char*filename,int numCe
     free(buffer);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void freeCola(movimiento **nodo)
+void freeLista(movimiento **inicio)
 {
 	movimiento *auxiliar;
-	while(*nodo != NULL){
-		auxiliar = *nodo;
-		*nodo = (*nodo)->sig;
+	while(*inicio != NULL){
+		auxiliar = *inicio;
+		*inicio = (*inicio)->sig;
 		free(auxiliar);
 	}
 	return;
