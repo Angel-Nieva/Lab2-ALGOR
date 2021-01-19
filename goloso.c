@@ -28,7 +28,7 @@ void writeFile(basural *centros,movimiento *inicio,const char * filename,int num
 /*====================================== MAIN ===========================================================*/
 int main(int argc, char const *argv[])
 {
-    if(argc !=2){ // Modificar a 3  <-----
+    if(argc !=3){ // Modificar a 3  <-----
         return 0;
     }
     int numCentros,incineradores;
