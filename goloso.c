@@ -41,21 +41,8 @@ int main(int argc, char const *argv[])
         movimiento *final = NULL;
         goloso(centros,numCentros,incineradores,subsidio,&inicio,&final);
 
-       /* movimiento *aux = inicio;
-
-        float costoTotal = 0;
-        while ( aux != NULL )
-        {
-            printf("%d -> %d : %f\n",aux->centroInicio,aux->centroFinal,aux->costo);
-            costoTotal+= aux->costo;
-            aux = aux->sig;
-        }
-        printf("Total: %f\n",costoTotal);
-
-        */
-        printf("voy aca\n");
         writeFile(centros,inicio,argv[2],numCentros);
-        //writeFile(g,argv[2]); 
+
         free(centros);
         freeCola(&inicio);
     }
@@ -209,13 +196,17 @@ void descolar(movimiento **inicio,movimiento **final)
 	return;
 }
 /*============================================ FUNCIONES ESCRITURA====================================================*/
-
+/**
+ * @brief Transforma los movimientos y resultados en un string posible de visualizar y guardar en un archivo de texto
+ * @param aux auxiliar para la lista enlazada
+ * @param costoTotal Costo total de los movimientos
+ * @return char *String
+ */
 char * movimientoToString(basural *centros,movimiento *inicio,int numCentros){
     char *buffer = malloc(sizeof(char)*1000);
     int a = 0;
 
     movimiento *aux = inicio;
-    printf("entroooooo\n");
     float costoTotal = 0;
     while ( aux != NULL )
     {
@@ -233,16 +224,18 @@ char * movimientoToString(basural *centros,movimiento *inicio,int numCentros){
             
 	}
     a += snprintf(buffer+a,1000-a,"costo: %f\n",costoTotal);
-    printf("%s \n",buffer);
    
     return buffer;
 }
 
 
-
+/**
+ * @brief Escribe un archivo con la solucion del problema
+ * @param numCentros la cantidad de centros de basura
+ * @param filename i.e salida.out
+ */
 void writeFile(basural *centros,movimiento *inicio,const char*filename,int numCentros)
 {
-    printf("entrooooo23232o\n");
     char *buffer = movimientoToString(centros,inicio,numCentros);
     FILE *fp;
     fp = fopen(filename, "w+");
@@ -270,24 +263,7 @@ void writeFile(basural *centros,movimiento *inicio,const char*filename,int numCe
 
 
 
-/*
-void front(cola *inicio){
-	if(inicio == NULL){
-		printf("Cola vacia\n");
-	}else{
-		printf("Inicio: %d\n",inicio->dato);
-	}
-	return;
-}
-void back(cola *final){
-	if(final == NULL){
-		printf("Cola vacia\n");
-	}else{
-		printf("Final: %d\n",final->dato);
-	}
-	return;
-}
-*/
+
 void freeCola(movimiento **nodo)
 {
 	movimiento *auxiliar;
