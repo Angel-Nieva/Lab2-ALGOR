@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "../incl/basural.h"
 #include "../incl/lista.h"
-
+#include "../incl/utility.h"
 /**
  * @brief Recorre una lista de basurales y cuenta la cantidad de centros de acopio con basura 
  * @param centros Lista con los centros de acopio
@@ -61,5 +61,10 @@ movimiento *mejorCandidato(basural *centros,int numCentros,float descuento)
     centros[centroFin].basura += centros[centroIni].basura;
     centros[centroIni].basura = 0;
     movimiento *nuevo = crearNodo(nuevo,distInicio,distLlegada,menorCosto);
+    #ifdef DEBUG
+
+        printf("%s\n",movimientoToString(centros,nuevo,numCentros));
+
+    #endif
     return nuevo;    
 }
