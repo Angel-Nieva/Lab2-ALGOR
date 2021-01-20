@@ -4,7 +4,8 @@
 #include "../incl/lista.h"
 #include "../incl/utility.h"
 /**
- * @brief Recorre una lista de basurales y cuenta la cantidad de centros de acopio con basura 
+ * @brief Recorre una lista de basurales y cuenta la cantidad de centros de acopio con basura
+ * O(N) -> T(N) = 2c + N(3c)  
  * @param centros Lista con los centros de acopio
  * @param numCentros Cantidad de basurales
  * @param incineradores Cantidad de incineradores
@@ -24,6 +25,14 @@ int basuraPorMover(basural *centros,int numCentros,int incineradores)
         return 0;     
 }
 
+/**
+ * @brief Recorre el arreglo con los centros de acopio para encontrar el mejor movimiento para transferir la basura
+ * O(N^2) -> T(N) = 2c + (N-1)(N-2)(10c) + 4c = 6c + N^2-3N+2 -> T(N) = N^2
+ * @param centros Lista con los centros de acopio
+ * @param numCentros Cantidad de basurales
+ * @param descuento Rebaja en el costo de transferir la basura por el subsidio
+ * @return Nodo con el centro de inicio, final y costo asociado (mejor candidato)
+ */ 
 movimiento *mejorCandidato(basural *centros,int numCentros,float descuento)
 {   
     float menorCosto = 9999999999;
@@ -58,8 +67,8 @@ movimiento *mejorCandidato(basural *centros,int numCentros,float descuento)
             }                                                
         }                
     }
-    centros[centroFin].basura += centros[centroIni].basura;
-    centros[centroIni].basura = 0;
+    centros[centroFin].basura += centros[centroIni].basura;     //Se transfiere la basura
+    centros[centroIni].basura = 0;                              //Se elimina de los candidatos
     movimiento *nuevo = crearNodo(nuevo,distInicio,distLlegada,menorCosto);
     #ifdef DEBUG
 
